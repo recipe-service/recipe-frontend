@@ -4,10 +4,7 @@
   padding: 32px 16px;
 }
 
-.app h1 {
-  margin-bottom: 24px;
-}
-
+/* 메뉴 폼 */
 .menu-form {
   display: flex;
   gap: 8px;
@@ -36,6 +33,7 @@
   background: #555;
 }
 
+/* 메뉴 리스트 */
 .menu-list {
   list-style: none;
   display: flex;
@@ -49,6 +47,14 @@
   border-radius: 8px;
 }
 
+.menu-item.clickable {
+  cursor: pointer;
+}
+
+.menu-item.clickable:hover {
+  border-color: #999;
+}
+
 .menu-item h2 {
   font-size: 18px;
   margin-bottom: 4px;
@@ -57,4 +63,167 @@
 .menu-item p {
   font-size: 14px;
   color: #666;
+}
+
+/* 뒤로가기 */
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  color: #666;
+}
+
+.back-btn:hover {
+  color: #333;
+}
+
+/* 스텝 리스트 */
+.step-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.step-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.step-number {
+  font-weight: 700;
+  font-size: 18px;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.step-item p {
+  font-size: 15px;
+  margin: 0;
+}
+
+.menu-desc {
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* 편집 버튼 */
+.edit-btn {
+  margin-top: 12px;
+  padding: 6px 16px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background: #555;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.save-btn {
+  padding: 6px 16px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  padding: 6px 16px;
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 편집 모드 스텝 */
+.step-item.editing {
+  align-items: center;
+  background: #fff;
+}
+
+.drag-handle {
+  cursor: grab;
+  font-size: 18px;
+  color: #999;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.step-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.step-controls {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.step-controls button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-controls button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.step-controls button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.add-first-btn {
+  padding: 10px 20px;
+  background: #f5f5f5;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  margin-top: 12px;
+}
+
+.empty {
+  color: #999;
+  margin-top: 20px;
 }
