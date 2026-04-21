@@ -44,7 +44,6 @@ export default function HomePage() {
           placeholder="설명"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          required
         />
         <button type="submit">추가</button>
       </form>
