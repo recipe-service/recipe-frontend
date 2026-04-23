@@ -27,6 +27,13 @@ export default function HomePage() {
     })
   }
 
+  const handleDelete = (e, id) => {
+    e.stopPropagation()
+    api.delete(`/menus/${id}`).then(() => {
+      fetchMenus()
+    })
+  }
+
   return (
     <div>
       <h1>가민's Prep</h1>
@@ -55,8 +62,16 @@ export default function HomePage() {
             className="menu-item clickable"
             onClick={() => navigate(`/menus/${menu.id}`)}
           >
-            <h2>{menu.title}</h2>
-            <p>{menu.description}</p>
+            <div>
+              <h2>{menu.title}</h2>
+              <p>{menu.description}</p>
+            </div>
+            <button 
+              className="delete-btn" 
+              onClick={(e) => handleDelete(e, menu.id)}
+            >
+              삭제
+            </button>
           </li>
         ))}
       </ul>
