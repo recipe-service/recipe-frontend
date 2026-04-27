@@ -27,6 +27,15 @@ export default function HomePage() {
     })
   }
 
+  const handleDelete = (e, id) => {
+    e.stopPropagation()
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      api.delete(`/menus/${id}`).then(() => {
+        fetchMenus()
+      })
+    }
+  }
+
   return (
     <div>
       <h1>가민's Prep</h1>
@@ -44,7 +53,6 @@ export default function HomePage() {
           placeholder="설명"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          required
         />
         <button type="submit">추가</button>
       </form>
@@ -56,8 +64,16 @@ export default function HomePage() {
             className="menu-item clickable"
             onClick={() => navigate(`/menus/${menu.id}`)}
           >
-            <h2>{menu.title}</h2>
-            <p>{menu.description}</p>
+            <div>
+              <h2>{menu.title}</h2>
+              <p>{menu.description}</p>
+            </div>
+            <button 
+              className="delete-btn" 
+              onClick={(e) => handleDelete(e, menu.id)}
+            >
+              삭제
+            </button>
           </li>
         ))}
       </ul>
