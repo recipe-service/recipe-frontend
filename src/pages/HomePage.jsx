@@ -29,9 +29,11 @@ export default function HomePage() {
 
   const handleDelete = (e, id) => {
     e.stopPropagation()
-    api.delete(`/menus/${id}`).then(() => {
-      fetchMenus()
-    })
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      api.delete(`/menus/${id}`).then(() => {
+        fetchMenus()
+      })
+    }
   }
 
   return (
