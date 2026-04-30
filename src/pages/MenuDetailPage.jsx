@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useBlocker } from 'react-router-dom'
 import {
   DndContext,
   closestCenter,
@@ -61,6 +61,33 @@ export default function MenuDetailPage() {
   const [menu, setMenu] = useState(null)
   const [editing, setEditing] = useState(false)
   const [editSteps, setEditSteps] = useState([])
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (editing) {
+        e.preventDefault()
+        e.returnValue = "변경사항이 저장되지 않을 수 있습니다. 나가시겠습니까?"
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [editing])
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      editing && currentLocation.pathname !== nextLocation.pathname
+  )
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      const confirmLeave = window.confirm("변경사항이 저장되지 않을 수 있습니다. 나가시겠습니까?")
+      if (confirmLeave) {
+        blocker.proceed()
+      } else {
+        blocker.reset()
+      }
+    }
+  }, [blocker])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
