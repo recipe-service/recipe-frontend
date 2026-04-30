@@ -9,6 +9,7 @@ export default function HomePage() {
   const [editingId, setEditingId] = useState(null)
   const [editTitle, setEditTitle] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [activeMenuId, setActiveMenuId] = useState(null)
   const navigate = useNavigate()
 
   const fetchMenus = () => {
@@ -58,6 +59,11 @@ export default function HomePage() {
       setEditingId(null)
       fetchMenus()
     })
+  }
+
+  const toggleMenuActions = (e, id) => {
+    e.stopPropagation()
+    setActiveMenuId((prev) => (prev === id ? null : id))
   }
 
   return (
@@ -120,21 +126,51 @@ export default function HomePage() {
                   <h2>{menu.title}</h2>
                   <p>{menu.description}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
-                  <button 
-                    className="edit-btn" 
-                    onClick={(e) => startEdit(e, menu)}
-                    style={{ margin: 0, padding: '6px 12px', width: '60px', height: '32px', boxSizing: 'border-box' }}
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <button
+                    className="more-btn"
+                    onClick={(e) => toggleMenuActions(e, menu.id)}
+                    style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', padding: '4px 8px' }}
                   >
-                    수정
+                    ⋮
                   </button>
-                  <button 
-                    className="delete-btn" 
-                    onClick={(e) => handleDelete(e, menu.id)}
-                    style={{ margin: 0, padding: '6px 12px', width: '60px', height: '32px', boxSizing: 'border-box' }}
-                  >
-                    삭제
-                  </button>
+                  {activeMenuId === menu.id && (
+                    <div style={{
+                      position: 'absolute',
+                      right: '0',
+                      top: '100%',
+                      background: '#fff',
+                      border: '1px solid #ddd',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                      padding: '8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                      zIndex: 10
+                    }}>
+                      <button 
+                        className="edit-btn" 
+                        onClick={(e) => {
+                          startEdit(e, menu);
+                          setActiveMenuId(null);
+                        }}
+                        style={{ margin: 0, padding: '6px 12px', width: '60px', height: '32px', boxSizing: 'border-box' }}
+                      >
+                        수정
+                      </button>
+                      <button 
+                        className="delete-btn" 
+                        onClick={(e) => {
+                          handleDelete(e, menu.id);
+                          setActiveMenuId(null);
+                        }}
+                        style={{ margin: 0, padding: '6px 12px', width: '60px', height: '32px', boxSizing: 'border-box' }}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
                 </div>
               </>
             )}
