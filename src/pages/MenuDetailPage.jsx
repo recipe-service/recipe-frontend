@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useBlocker } from 'react-router-dom'
 import {
   DndContext,
   closestCenter,
@@ -16,7 +16,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import api from '../api/axios'
 
-function SortableStep({ step, index, onContentChange, onAdd, onRemove }) {
+function SortableStep({ step, index, onContentChange, onAdd, onRemove, onEnter }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: step.dndId })
 
@@ -35,7 +35,14 @@ function SortableStep({ step, index, onContentChange, onAdd, onRemove }) {
         type="text"
         className="step-input"
         value={step.content}
+        autoFocus={step.isNew}
         onChange={(e) => onContentChange(index, e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            if (onEnter) onEnter(index)
+          }
+        }}
         placeholder="스텝 내용 입력"
       />
       <div className="step-controls">
@@ -54,6 +61,33 @@ export default function MenuDetailPage() {
   const [menu, setMenu] = useState(null)
   const [editing, setEditing] = useState(false)
   const [editSteps, setEditSteps] = useState([])
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (editing) {
+        e.preventDefault()
+        e.returnValue = "변경사항이 저장되지 않을 수 있습니다. 나가시겠습니까?"
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [editing])
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      editing && currentLocation.pathname !== nextLocation.pathname
+  )
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      const confirmLeave = window.confirm("변경사항이 저장되지 않을 수 있습니다. 나가시겠습니까?")
+      if (confirmLeave) {
+        blocker.proceed()
+      } else {
+        blocker.reset()
+      }
+    }
+  }, [blocker])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -86,12 +120,26 @@ export default function MenuDetailPage() {
 
   const addStep = (index) => {
     const updated = [...editSteps]
-    updated.splice(index + 1, 0, { content: '', dndId: `step-${nextDndId++}` })
+    updated.splice(index + 1, 0, { content: '', dndId: `step-${nextDndId++}`, isNew: true })
     setEditSteps(updated)
   }
 
   const removeStep = (index) => {
     setEditSteps(editSteps.filter((_, i) => i !== index))
+  }
+
+  const handleEnter = (index) => {
+    const updated = [...editSteps]
+    updated.splice(index + 1, 0, { content: '', dndId: `step-${nextDndId++}`, isNew: true })
+    setEditSteps(updated)
+
+    const body = updated.map((s, i) => ({
+      content: s.content,
+      stepNumber: i + 1,
+    }))
+    api.put(`/steps/menu/${menuId}`, body).then(() => {
+      fetchMenu()
+    })
   }
 
   const handleDragEnd = (event) => {
@@ -164,6 +212,7 @@ export default function MenuDetailPage() {
                     onContentChange={handleContentChange}
                     onAdd={addStep}
                     onRemove={removeStep}
+                    onEnter={handleEnter}
                   />
                 ))}
               </ol>
@@ -173,7 +222,7 @@ export default function MenuDetailPage() {
             <button
               className="add-first-btn"
               onClick={() =>
-                setEditSteps([{ content: '', dndId: `step-${nextDndId++}` }])
+                setEditSteps([{ content: '', dndId: `step-${nextDndId++}`, isNew: true }])
               }
             >
               첫 번째 스텝 추가
